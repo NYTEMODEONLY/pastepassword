@@ -8,6 +8,7 @@ import {
   Lock,
   Plus,
   Archive,
+  Settings,
   KeyRound,
   Code,
   Terminal,
@@ -22,6 +23,7 @@ import { CRED_TYPE_LABELS, CRED_TYPE_COLORS } from "../../types";
 
 interface SidebarProps {
   onQuickAdd: () => void;
+  onSettings: () => void;
 }
 
 const TYPE_ICONS: Record<CredentialType, React.ReactNode> = {
@@ -34,7 +36,7 @@ const TYPE_ICONS: Record<CredentialType, React.ReactNode> = {
   unknown: <HelpCircle className="h-3.5 w-3.5" />,
 };
 
-export function Sidebar({ onQuickAdd }: SidebarProps) {
+export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
   const { lock } = useAuthStore();
   const { filter, setFilter, tags, credentials } = useCredentialStore();
 
@@ -179,6 +181,13 @@ export function Sidebar({ onQuickAdd }: SidebarProps) {
       </nav>
 
       <div className="border-t border-border p-2">
+        <button
+          onClick={onSettings}
+          className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary transition hover:bg-bg-hover hover:text-text"
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </button>
         <button
           onClick={lock}
           className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary transition hover:bg-bg-hover hover:text-text"

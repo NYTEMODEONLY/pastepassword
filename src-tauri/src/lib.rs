@@ -41,6 +41,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_dialog::init())
         .manage(Mutex::new(app_state))
         .invoke_handler(tauri::generate_handler![
             commands::auth::is_vault_setup,
@@ -56,6 +57,8 @@ pub fn run() {
             commands::tags::get_tags,
             commands::tags::create_tag,
             commands::tags::delete_tag,
+            commands::import_export::export_vault,
+            commands::import_export::import_vault,
             detect_credential_type,
             touch_activity,
             set_auto_lock_seconds,

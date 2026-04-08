@@ -6,6 +6,7 @@ import { CredentialList } from "../credentials/CredentialList";
 import { CredentialDetail } from "../credentials/CredentialDetail";
 import { QuickAddModal } from "../credentials/QuickAddModal";
 import { SearchPalette } from "../search/SearchPalette";
+import { SettingsPanel } from "../settings/SettingsPanel";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
@@ -15,6 +16,7 @@ export function MainLayout() {
   const { lock } = useAuthStore();
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Track user activity for auto-lock
   const touchActivity = useCallback(() => {
@@ -107,7 +109,7 @@ export function MainLayout() {
 
   return (
     <div className="flex h-screen bg-bg">
-      <Sidebar onQuickAdd={() => setShowQuickAdd(true)} />
+      <Sidebar onQuickAdd={() => setShowQuickAdd(true)} onSettings={() => setShowSettings(true)} />
       <CredentialList onQuickAdd={() => setShowQuickAdd(true)} />
       {selectedId && <CredentialDetail />}
 
@@ -115,6 +117,7 @@ export function MainLayout() {
         <QuickAddModal onClose={() => setShowQuickAdd(false)} />
       )}
       {showSearch && <SearchPalette onClose={() => setShowSearch(false)} />}
+      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

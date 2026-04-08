@@ -51,3 +51,13 @@ export const getTags = () => invoke<Tag[]>("get_tags");
 export const createTag = (name: string, color?: string) =>
   invoke<Tag>("create_tag", { name, color });
 export const deleteTag = (id: string) => invoke<void>("delete_tag", { id });
+
+// Import/Export
+export const exportVault = (path: string) =>
+  invoke<number>("export_vault", { path });
+export const importVault = (path: string) =>
+  invoke<number>("import_vault", { path });
+
+// Settings
+export const setAutoLockSeconds = (seconds: number) =>
+  invoke<void>("set_auto_lock_seconds", { seconds });
