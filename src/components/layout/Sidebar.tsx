@@ -7,6 +7,7 @@ import {
   Tag,
   Lock,
   Plus,
+  Archive,
   KeyRound,
   Code,
   Terminal,
@@ -108,6 +109,19 @@ export function Sidebar({ onQuickAdd }: SidebarProps) {
             onClick={() =>
               setFilter({
                 sort_by: "accessed_at",
+                cred_type: undefined,
+                is_favorite: undefined,
+                tag_id: undefined,
+              })
+            }
+          />
+          <SidebarItem
+            icon={<Archive className="h-4 w-4" />}
+            label="Archived"
+            active={filter.is_archived === true}
+            onClick={() =>
+              setFilter({
+                is_archived: true,
                 cred_type: undefined,
                 is_favorite: undefined,
                 tag_id: undefined,
