@@ -1,0 +1,27 @@
+[package]
+name = "pastepassword"
+version = "0.1.0"
+edition = "2021"
+description = "Lightweight, local-only credential manager"
+
+[lib]
+name = "pastepassword_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-clipboard-manager = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.32", features = ["bundled-sqlcipher"] }
+argon2 = "0.5"
+uuid = { version = "1", features = ["v4"] }
+zeroize = { version = "1", features = ["derive"] }
+getrandom = "0.2"
+thiserror = "2"
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1"
+dirs = "6"
