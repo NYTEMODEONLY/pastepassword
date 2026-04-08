@@ -10,6 +10,8 @@ export function SetupScreen() {
   const [localError, setLocalError] = useState("");
 
   const strength = getStrength(password);
+  const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
+  const strengthColor = ["", "#ef4444", "#f59e0b", "#22c55e", "#22c55e"][strength];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,21 +30,26 @@ export function SetupScreen() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-bg">
-      <div className="w-full max-w-md animate-fade-in px-8">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
-            <ShieldCheck className="h-8 w-8 text-accent" />
+    <div className="noise-bg flex h-screen items-center justify-center bg-bg">
+      {/* Subtle gradient orb behind the card */}
+      <div className="pointer-events-none absolute h-[400px] w-[400px] rounded-full bg-accent/5 blur-[120px]" />
+
+      <div className="relative w-full max-w-md animate-fade-in px-8">
+        <div className="mb-10 text-center">
+          <div className="animate-glow-pulse mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl border border-accent/20 bg-accent-subtle">
+            <ShieldCheck className="h-10 w-10 text-accent" />
           </div>
-          <h1 className="text-2xl font-bold text-text">PastePassword</h1>
-          <p className="mt-2 text-sm text-text-secondary">
-            Create a master password to secure your vault
+          <h1 className="text-2xl font-semibold tracking-tight text-text">
+            PastePassword
+          </h1>
+          <p className="mt-2 text-sm text-text-muted">
+            Create a master password to protect your vault
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="mb-1.5 block text-sm text-text-secondary">
+            <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-text-muted">
               Master Password
             </label>
             <div className="relative">
@@ -50,14 +57,14 @@ export function SetupScreen() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-border bg-bg-secondary px-4 py-3 pr-10 text-text outline-none transition focus:border-border-focus"
+                className="w-full rounded-xl border border-border bg-bg-secondary px-4 py-3.5 pr-10 text-text outline-none transition-all duration-200 placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent/30"
                 placeholder="Enter a strong password"
                 autoFocus
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-text-muted transition hover:text-text-secondary"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -67,55 +74,59 @@ export function SetupScreen() {
               </button>
             </div>
             {password && (
-              <div className="mt-2 flex gap-1">
-                {[1, 2, 3, 4].map((level) => (
-                  <div
-                    key={level}
-                    className="h-1 flex-1 rounded-full transition-colors"
-                    style={{
-                      backgroundColor:
-                        strength >= level
-                          ? strength <= 1
-                            ? "#ef4444"
-                            : strength <= 2
-                              ? "#f59e0b"
-                              : "#22c55e"
-                          : "#2a2a3a",
-                    }}
-                  />
-                ))}
+              <div className="mt-3 space-y-1.5">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4].map((level) => (
+                    <div
+                      key={level}
+                      className="h-1 flex-1 rounded-full transition-all duration-300"
+                      style={{
+                        backgroundColor:
+                          strength >= level ? strengthColor : "var(--color-border)",
+                      }}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs" style={{ color: strengthColor }}>
+                  {strengthLabel}
+                </p>
               </div>
             )}
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm text-text-secondary">
+            <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-text-muted">
               Confirm Password
             </label>
             <input
               type={showPassword ? "text" : "password"}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg-secondary px-4 py-3 text-text outline-none transition focus:border-border-focus"
+              className="w-full rounded-xl border border-border bg-bg-secondary px-4 py-3.5 text-text outline-none transition-all duration-200 placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent/30"
               placeholder="Confirm your password"
             />
+            {confirm && password && confirm !== password && (
+              <p className="mt-1.5 text-xs text-danger">Passwords don't match</p>
+            )}
           </div>
 
           {(localError || error) && (
-            <p className="text-sm text-danger">{localError || error}</p>
+            <div className="rounded-lg border border-danger/20 bg-danger-subtle px-4 py-2.5 text-sm text-danger">
+              {localError || error}
+            </div>
           )}
 
           <button
             type="submit"
             disabled={loading || !password || !confirm}
-            className="w-full rounded-lg bg-accent py-3 font-medium text-white transition hover:bg-accent-hover disabled:opacity-50"
+            className="w-full rounded-xl bg-accent py-3.5 font-medium text-white shadow-lg shadow-accent/20 transition-all duration-200 hover:bg-accent-hover hover:shadow-accent/30 disabled:opacity-40 disabled:shadow-none"
           >
             {loading ? "Creating vault..." : "Create Vault"}
           </button>
 
-          <p className="text-center text-xs text-text-muted">
-            Your vault is encrypted locally. If you forget this password, your
-            data cannot be recovered.
+          <p className="text-center text-[11px] leading-relaxed text-text-muted">
+            Your vault is encrypted locally with AES-256. If you forget this
+            password, your data cannot be recovered.
           </p>
         </form>
       </div>

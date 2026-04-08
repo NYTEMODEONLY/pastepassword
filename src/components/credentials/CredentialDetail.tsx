@@ -14,6 +14,8 @@ import {
   Pencil,
   Archive,
   ArchiveRestore,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { EditCredentialModal } from "./EditCredentialModal";
@@ -70,60 +72,77 @@ export function CredentialDetail() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col overflow-y-auto bg-bg">
-        <div className="flex items-start justify-between border-b border-border px-6 py-4">
-          <div>
-            <h2 className="text-lg font-semibold text-text">{cred.title}</h2>
-            <span
-              className="mt-1 inline-block rounded px-2 py-0.5 text-xs font-medium"
-              style={{
-                backgroundColor: CRED_TYPE_COLORS[cred.cred_type] + "20",
-                color: CRED_TYPE_COLORS[cred.cred_type],
-              }}
-            >
-              {CRED_TYPE_LABELS[cred.cred_type]}
-            </span>
+      <div className="flex flex-1 flex-col overflow-y-auto bg-bg animate-slide-in-right">
+        {/* Header */}
+        <div className="flex items-start justify-between border-b border-border px-6 py-5">
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold tracking-tight text-text">
+              {cred.title}
+            </h2>
+            <div className="flex items-center gap-2">
+              <span
+                className="rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
+                style={{
+                  backgroundColor: CRED_TYPE_COLORS[cred.cred_type] + "15",
+                  color: CRED_TYPE_COLORS[cred.cred_type],
+                }}
+              >
+                {CRED_TYPE_LABELS[cred.cred_type]}
+              </span>
+              {cred.is_favorite && (
+                <Star className="h-3.5 w-3.5 fill-warning text-warning" />
+              )}
+              {cred.is_archived && (
+                <span className="rounded-md bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning">
+                  Archived
+                </span>
+              )}
+            </div>
           </div>
           <button
             onClick={() => selectCredential(null)}
-            className="rounded p-1 text-text-muted hover:bg-bg-hover hover:text-text"
+            className="rounded-lg p-1.5 text-text-muted transition hover:bg-bg-hover hover:text-text"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="flex-1 px-6 py-4 space-y-5">
+        <div className="flex-1 space-y-6 px-6 py-5">
           {/* Secret Value */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase text-text-muted">
+            <label className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-text-muted">
               Secret
             </label>
-            <div className="rounded-lg border border-border bg-bg-secondary p-3">
-              <pre className="whitespace-pre-wrap break-all font-mono text-sm text-text">
+            <div className="rounded-xl border border-border bg-bg-secondary p-4">
+              <pre className="min-h-[40px] whitespace-pre-wrap break-all font-mono text-sm leading-relaxed text-text">
                 {showValue ? cred.value : maskValue(cred.value)}
               </pre>
-              <div className="mt-3 flex gap-2">
+              <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => setShowValue(!showValue)}
-                  className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-text-secondary transition hover:bg-bg-hover hover:text-text"
+                  className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-secondary transition-all duration-150 hover:bg-bg-hover hover:text-text"
                 >
                   {showValue ? (
                     <EyeOff className="h-3.5 w-3.5" />
                   ) : (
                     <Eye className="h-3.5 w-3.5" />
                   )}
-                  {showValue ? "Hide" : "Show"}
+                  {showValue ? "Hide" : "Reveal"}
                 </button>
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white transition hover:bg-accent-hover"
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium text-white transition-all duration-200 ${
+                    copied
+                      ? "bg-success shadow-md shadow-success/20"
+                      : "bg-accent shadow-md shadow-accent/20 hover:bg-accent-hover hover:shadow-accent/30"
+                  }`}
                 >
                   {copied ? (
                     <Check className="h-3.5 w-3.5" />
                   ) : (
                     <Copy className="h-3.5 w-3.5" />
                   )}
-                  {copied ? "Copied!" : "Copy"}
+                  {copied ? "Copied!" : "Copy to clipboard"}
                 </button>
               </div>
             </div>
@@ -132,16 +151,16 @@ export function CredentialDetail() {
           {/* Tags */}
           {cred.tags.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase text-text-muted">
+              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Tags
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {cred.tags.map((tag) => (
                   <span
                     key={tag.id}
-                    className="rounded-md px-2 py-1 text-xs font-medium"
+                    className="rounded-lg px-2.5 py-1 text-xs font-medium"
                     style={{
-                      backgroundColor: tag.color + "20",
+                      backgroundColor: tag.color + "15",
                       color: tag.color,
                     }}
                   >
@@ -155,69 +174,73 @@ export function CredentialDetail() {
           {/* Notes */}
           {cred.notes && (
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase text-text-muted">
+              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Notes
               </label>
-              <p className="text-sm text-text-secondary">{cred.notes}</p>
+              <p className="text-sm leading-relaxed text-text-secondary">
+                {cred.notes}
+              </p>
             </div>
           )}
 
           {/* Metadata */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase text-text-muted">
-              Info
+            <label className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+              Details
             </label>
-            <div className="space-y-1 text-sm text-text-secondary">
-              <p>Added: {timeAgo(cred.created_at)}</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <Calendar className="h-3.5 w-3.5 text-text-muted" />
+                <span>Added {timeAgo(cred.created_at)}</span>
+              </div>
               {cred.accessed_at && (
-                <p>Last used: {timeAgo(cred.accessed_at)}</p>
-              )}
-              {cred.is_archived && (
-                <p className="text-warning">Archived</p>
+                <div className="flex items-center gap-2 text-sm text-text-secondary">
+                  <Clock className="h-3.5 w-3.5 text-text-muted" />
+                  <span>Last used {timeAgo(cred.accessed_at)}</span>
+                </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 border-t border-border px-6 py-3">
-          <button
+        {/* Action Bar */}
+        <div className="flex items-center gap-1.5 border-t border-border px-6 py-3">
+          <ActionButton
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            label="Edit"
             onClick={() => setShowEdit(true)}
-            className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-text-secondary transition hover:bg-bg-hover hover:text-text"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-            Edit
-          </button>
-          <button
+          />
+          <ActionButton
+            icon={
+              <Star
+                className={`h-3.5 w-3.5 ${cred.is_favorite ? "fill-warning text-warning" : ""}`}
+              />
+            }
+            label={cred.is_favorite ? "Unfav" : "Fav"}
             onClick={() => toggleFavorite(cred.id)}
-            className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-text-secondary transition hover:bg-bg-hover hover:text-text"
-          >
-            <Star
-              className={`h-3.5 w-3.5 ${cred.is_favorite ? "fill-warning text-warning" : ""}`}
-            />
-            {cred.is_favorite ? "Unfavorite" : "Favorite"}
-          </button>
-          <button
+          />
+          <ActionButton
+            icon={
+              cred.is_archived ? (
+                <ArchiveRestore className="h-3.5 w-3.5" />
+              ) : (
+                <Archive className="h-3.5 w-3.5" />
+              )
+            }
+            label={cred.is_archived ? "Restore" : "Archive"}
             onClick={handleArchive}
-            className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-text-secondary transition hover:bg-bg-hover hover:text-text"
-          >
-            {cred.is_archived ? (
-              <ArchiveRestore className="h-3.5 w-3.5" />
-            ) : (
-              <Archive className="h-3.5 w-3.5" />
-            )}
-            {cred.is_archived ? "Unarchive" : "Archive"}
-          </button>
+          />
+          <div className="flex-1" />
           <button
             onClick={handleDelete}
-            className={`ml-auto flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs transition ${
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
               confirmDelete
-                ? "border-danger bg-danger text-white"
-                : "border-border text-text-secondary hover:border-danger hover:text-danger"
+                ? "border-danger bg-danger text-white shadow-md shadow-danger/20"
+                : "border-border text-text-muted hover:border-danger/50 hover:text-danger"
             }`}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            {confirmDelete ? "Confirm Delete" : "Delete"}
+            {confirmDelete ? "Confirm" : "Delete"}
           </button>
         </div>
       </div>
@@ -229,5 +252,25 @@ export function CredentialDetail() {
         />
       )}
     </>
+  );
+}
+
+function ActionButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-text-secondary transition-all duration-150 hover:bg-bg-hover hover:text-text"
+    >
+      {icon}
+      {label}
+    </button>
   );
 }

@@ -13,8 +13,12 @@ export default function App() {
 
   if (loading && view !== "main") {
     return (
-      <div className="flex h-screen items-center justify-center bg-bg">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+      <div className="noise-bg flex h-screen items-center justify-center bg-bg">
+        <div className="pointer-events-none absolute h-[300px] w-[300px] rounded-full bg-accent/5 blur-[100px]" />
+        <div className="relative flex flex-col items-center gap-4 animate-fade-in">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-accent/30 border-t-accent" />
+          <p className="text-sm text-text-muted">Loading vault...</p>
+        </div>
       </div>
     );
   }

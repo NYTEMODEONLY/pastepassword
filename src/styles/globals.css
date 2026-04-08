@@ -1,20 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0a0a0f;
-  --color-bg-secondary: #12121a;
-  --color-bg-tertiary: #1a1a26;
-  --color-bg-hover: #22222e;
-  --color-border: #2a2a3a;
+  /* Deep dark palette with blue undertones */
+  --color-bg: #09090b;
+  --color-bg-secondary: #0f0f14;
+  --color-bg-tertiary: #16161e;
+  --color-bg-hover: #1c1c27;
+  --color-bg-active: #22223a;
+
+  /* Borders with subtle visibility */
+  --color-border: #1e1e2e;
+  --color-border-subtle: #16161e;
   --color-border-focus: #6366f1;
-  --color-text: #e4e4e7;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
+
+  /* Text hierarchy */
+  --color-text: #f0f0f3;
+  --color-text-secondary: #a0a0b2;
+  --color-text-muted: #5a5a72;
+
+  /* Accent — indigo with glow */
   --color-accent: #6366f1;
   --color-accent-hover: #818cf8;
+  --color-accent-glow: rgba(99, 102, 241, 0.15);
+  --color-accent-subtle: rgba(99, 102, 241, 0.08);
+
+  /* Semantic */
   --color-danger: #ef4444;
+  --color-danger-subtle: rgba(239, 68, 68, 0.1);
   --color-success: #22c55e;
+  --color-success-subtle: rgba(34, 197, 94, 0.1);
   --color-warning: #f59e0b;
+  --color-warning-subtle: rgba(245, 158, 11, 0.1);
 }
 
 * {
@@ -23,17 +39,24 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 14px;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Elegant scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -41,34 +64,102 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
+  background: rgba(100, 100, 140, 0.2);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: rgba(100, 100, 140, 0.35);
 }
 
-input, textarea {
+/* Enable text selection in inputs */
+input, textarea, pre {
   user-select: text;
   -webkit-user-select: text;
 }
 
+/* Focus ring style */
+*:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* Animations */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
   20%, 40%, 60%, 80% { transform: translateX(4px); }
 }
 
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fade-in-scale {
+  from { opacity: 0; transform: scale(0.97) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+  50% { box-shadow: 0 0 20px 2px rgba(99, 102, 241, 0.15); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
 .animate-fade-in {
-  animation: fade-in 0.2s ease-out;
+  animation: fade-in 0.25s ease-out;
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale 0.2s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.2s ease-out;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-backdrop-in {
+  animation: backdrop-in 0.15s ease-out;
+}
+
+/* Glass-morphism backdrop for modals */
+.glass-backdrop {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Subtle noise texture overlay */
+.noise-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0.015;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  z-index: 9999;
 }

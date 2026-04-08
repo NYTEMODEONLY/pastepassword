@@ -59,36 +59,44 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
 
   return (
     <div className="flex h-full w-56 shrink-0 flex-col border-r border-border bg-bg-secondary">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Key className="h-4 w-4 text-accent" />
-          <span className="text-sm font-semibold text-text">PastePassword</span>
+      {/* Header */}
+      <div className="flex items-center gap-2.5 px-5 py-4">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10">
+          <Key className="h-3.5 w-3.5 text-accent" />
         </div>
+        <span className="text-sm font-semibold tracking-tight text-text">
+          PastePassword
+        </span>
       </div>
 
-      <div className="px-3 pb-2">
+      {/* Quick Add */}
+      <div className="px-3 pb-3">
         <button
           onClick={onQuickAdd}
-          className="flex w-full items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-medium text-white transition hover:bg-accent-hover"
+          className="flex w-full items-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-white shadow-md shadow-accent/15 transition-all duration-200 hover:bg-accent-hover hover:shadow-accent/25 active:scale-[0.98]"
         >
           <Plus className="h-4 w-4" />
           Quick Add
-          <span className="ml-auto text-xs opacity-70">⌘N</span>
+          <kbd className="ml-auto rounded border border-white/20 px-1.5 py-0.5 text-[10px] font-normal opacity-70">
+            ⌘N
+          </kbd>
         </button>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-2 py-1">
-        <div className="mb-1">
+        <div className="space-y-0.5">
           <SidebarItem
             icon={<LayoutList className="h-4 w-4" />}
             label="All"
             count={credentials.length}
-            active={!filter.cred_type && !filter.is_favorite && !filter.tag_id}
+            active={!filter.cred_type && !filter.is_favorite && !filter.tag_id && !filter.is_archived}
             onClick={() =>
               setFilter({
                 cred_type: undefined,
                 is_favorite: undefined,
                 tag_id: undefined,
+                is_archived: undefined,
               })
             }
           />
@@ -101,6 +109,7 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
                 is_favorite: true,
                 cred_type: undefined,
                 tag_id: undefined,
+                is_archived: undefined,
               })
             }
           />
@@ -114,6 +123,7 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
                 cred_type: undefined,
                 is_favorite: undefined,
                 tag_id: undefined,
+                is_archived: undefined,
               })
             }
           />
@@ -132,65 +142,74 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
           />
         </div>
 
-        <div className="mb-1 mt-3">
-          <p className="mb-1 px-3 text-xs font-medium uppercase text-text-muted">
+        {/* Types */}
+        <div className="mt-5">
+          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
             Types
           </p>
-          {credTypes.map((type) => (
-            <SidebarItem
-              key={type}
-              icon={TYPE_ICONS[type]}
-              label={CRED_TYPE_LABELS[type]}
-              count={typeCounts[type]}
-              active={filter.cred_type === type}
-              onClick={() =>
-                setFilter({
-                  cred_type: filter.cred_type === type ? undefined : type,
-                  is_favorite: undefined,
-                  tag_id: undefined,
-                })
-              }
-              color={CRED_TYPE_COLORS[type]}
-            />
-          ))}
-        </div>
-
-        {tags.length > 0 && (
-          <div className="mb-1 mt-3">
-            <p className="mb-1 px-3 text-xs font-medium uppercase text-text-muted">
-              Tags
-            </p>
-            {tags.map((tag) => (
+          <div className="space-y-0.5">
+            {credTypes.map((type) => (
               <SidebarItem
-                key={tag.id}
-                icon={<Tag className="h-3.5 w-3.5" />}
-                label={tag.name}
-                active={filter.tag_id === tag.id}
+                key={type}
+                icon={TYPE_ICONS[type]}
+                label={CRED_TYPE_LABELS[type]}
+                count={typeCounts[type]}
+                active={filter.cred_type === type}
                 onClick={() =>
                   setFilter({
-                    tag_id: filter.tag_id === tag.id ? undefined : tag.id,
-                    cred_type: undefined,
+                    cred_type: filter.cred_type === type ? undefined : type,
                     is_favorite: undefined,
+                    tag_id: undefined,
+                    is_archived: undefined,
                   })
                 }
-                color={tag.color}
+                color={CRED_TYPE_COLORS[type]}
               />
             ))}
+          </div>
+        </div>
+
+        {/* Tags */}
+        {tags.length > 0 && (
+          <div className="mt-5">
+            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+              Tags
+            </p>
+            <div className="space-y-0.5">
+              {tags.map((tag) => (
+                <SidebarItem
+                  key={tag.id}
+                  icon={<Tag className="h-3.5 w-3.5" />}
+                  label={tag.name}
+                  active={filter.tag_id === tag.id}
+                  onClick={() =>
+                    setFilter({
+                      tag_id: filter.tag_id === tag.id ? undefined : tag.id,
+                      cred_type: undefined,
+                      is_favorite: undefined,
+                      is_archived: undefined,
+                    })
+                  }
+                  color={tag.color}
+                />
+              ))}
+            </div>
           </div>
         )}
       </nav>
 
-      <div className="border-t border-border p-2">
+      {/* Footer */}
+      <div className="space-y-0.5 border-t border-border p-2">
         <button
           onClick={onSettings}
-          className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary transition hover:bg-bg-hover hover:text-text"
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-muted transition-all duration-150 hover:bg-bg-hover hover:text-text-secondary"
         >
           <Settings className="h-4 w-4" />
           Settings
         </button>
         <button
           onClick={lock}
-          className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-text-secondary transition hover:bg-bg-hover hover:text-text"
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-muted transition-all duration-150 hover:bg-bg-hover hover:text-text-secondary"
         >
           <Lock className="h-4 w-4" />
           Lock Vault
@@ -219,16 +238,30 @@ function SidebarItem({
     <button
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-sm transition",
+        "group flex w-full items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-all duration-150",
         active
-          ? "bg-accent/10 text-accent"
+          ? "bg-accent/10 text-accent font-medium"
           : "text-text-secondary hover:bg-bg-hover hover:text-text",
       )}
     >
-      <span style={color && !active ? { color } : undefined}>{icon}</span>
+      <span
+        className="transition-colors duration-150"
+        style={color && !active ? { color } : undefined}
+      >
+        {icon}
+      </span>
       <span className="truncate">{label}</span>
       {count !== undefined && count > 0 && (
-        <span className="ml-auto text-xs text-text-muted">{count}</span>
+        <span
+          className={cn(
+            "ml-auto min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-[10px] font-medium",
+            active
+              ? "bg-accent/20 text-accent"
+              : "bg-bg-tertiary text-text-muted",
+          )}
+        >
+          {count}
+        </span>
       )}
     </button>
   );

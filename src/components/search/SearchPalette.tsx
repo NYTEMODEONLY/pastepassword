@@ -72,10 +72,10 @@ export function SearchPalette({ onClose }: SearchPaletteProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-[20vh]"
+      className="glass-backdrop animate-backdrop-in fixed inset-0 z-50 flex items-start justify-center pt-[20vh]"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg animate-fade-in rounded-xl border border-border bg-bg-secondary shadow-2xl">
+      <div className="w-full max-w-lg animate-fade-in-scale rounded-xl border border-border bg-bg-secondary shadow-2xl shadow-black/40">
         <div className="flex items-center gap-3 border-b border-border px-4 py-3">
           <Search className="h-5 w-5 text-text-muted" />
           <input

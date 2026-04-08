@@ -108,16 +108,48 @@ export function MainLayout() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-bg">
+    <div className="noise-bg flex h-screen bg-bg">
       <Sidebar onQuickAdd={() => setShowQuickAdd(true)} onSettings={() => setShowSettings(true)} />
       <CredentialList onQuickAdd={() => setShowQuickAdd(true)} />
-      {selectedId && <CredentialDetail />}
+      {selectedId ? (
+        <CredentialDetail />
+      ) : (
+        <EmptyDetail />
+      )}
 
       {showQuickAdd && (
         <QuickAddModal onClose={() => setShowQuickAdd(false)} />
       )}
       {showSearch && <SearchPalette onClose={() => setShowSearch(false)} />}
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+    </div>
+  );
+}
+
+function EmptyDetail() {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center bg-bg">
+      <div className="text-center animate-fade-in">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-bg-secondary">
+          <svg
+            className="h-7 w-7 text-text-muted"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
+            />
+          </svg>
+        </div>
+        <p className="text-sm text-text-secondary">Select a credential</p>
+        <p className="mt-1 text-xs text-text-muted">
+          or press <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px]">⌘N</kbd> to add one
+        </p>
+      </div>
     </div>
   );
 }

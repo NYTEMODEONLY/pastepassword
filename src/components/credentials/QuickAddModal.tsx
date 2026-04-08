@@ -105,10 +105,10 @@ export function QuickAddModal({ onClose }: QuickAddModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+      className="glass-backdrop animate-backdrop-in fixed inset-0 z-50 flex items-center justify-center"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg animate-fade-in rounded-xl border border-border bg-bg-secondary p-6 shadow-2xl">
+      <div className="w-full max-w-lg animate-fade-in-scale rounded-xl border border-border bg-bg-secondary p-6 shadow-2xl shadow-black/40">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-text">Quick Add</h2>
           <button
@@ -127,7 +127,7 @@ export function QuickAddModal({ onClose }: QuickAddModalProps) {
             <textarea
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg px-4 py-3 font-mono text-sm text-text outline-none transition placeholder:text-text-muted focus:border-border-focus"
+              className="w-full rounded-xl border border-border bg-bg px-4 py-3 font-mono text-sm text-text outline-none transition-all duration-200 placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent/20"
               placeholder="Paste your credential here..."
               rows={3}
               autoFocus

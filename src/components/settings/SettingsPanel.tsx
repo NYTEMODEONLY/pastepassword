@@ -63,10 +63,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+      className="glass-backdrop animate-backdrop-in fixed inset-0 z-50 flex items-center justify-center"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md animate-fade-in rounded-xl border border-border bg-bg-secondary p-6 shadow-2xl">
+      <div className="w-full max-w-md animate-fade-in-scale rounded-xl border border-border bg-bg-secondary p-6 shadow-2xl shadow-black/40">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-text">Settings</h2>
           <button
