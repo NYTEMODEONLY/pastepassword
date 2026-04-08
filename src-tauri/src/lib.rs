@@ -19,6 +19,32 @@ fn detect_credential_type(value: String) -> String {
 }
 
 #[tauri::command]
+fn open_url(url: String) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .arg(&url)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("cmd")
+            .args(["/c", "start", &url])
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+    #[cfg(target_os = "linux")]
+    {
+        std::process::Command::new("xdg-open")
+            .arg(&url)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
 fn touch_activity(state: tauri::State<'_, Mutex<AppState>>) -> Result<(), String> {
     let mut app_state = state.lock().map_err(|e| e.to_string())?;
     app_state.touch();
@@ -60,6 +86,7 @@ pub fn run() {
             commands::import_export::export_vault,
             commands::import_export::import_vault,
             detect_credential_type,
+            open_url,
             touch_activity,
             set_auto_lock_seconds,
         ])

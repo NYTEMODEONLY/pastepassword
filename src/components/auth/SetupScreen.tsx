@@ -1,145 +1,136 @@
 import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
-import { Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Eye, ShieldCheck } from "lucide-react";
 
 export function SetupScreen() {
   const { setup, error, loading } = useAuthStore();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [localError, setLocalError] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [localErr, setLocalErr] = useState("");
+  const [pwFocus, setPwFocus] = useState(false);
+  const [cfFocus, setCfFocus] = useState(false);
 
   const strength = getStrength(password);
-  const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
-  const strengthColor = ["", "#ef4444", "#f59e0b", "#22c55e", "#22c55e"][strength];
+  const sColor = ["", "#e5484d", "#e5a000", "#30a46c", "#30a46c"][strength];
+  const sLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLocalError("");
-
-    if (password.length < 8) {
-      setLocalError("Password must be at least 8 characters");
-      return;
-    }
-    if (password !== confirm) {
-      setLocalError("Passwords don't match");
-      return;
-    }
-
+    e.preventDefault(); setLocalErr("");
+    if (password.length < 8) { setLocalErr("At least 8 characters required"); return; }
+    if (password !== confirm) { setLocalErr("Passwords don't match"); return; }
     await setup(password);
   }
 
-  return (
-    <div className="noise-bg flex h-screen items-center justify-center bg-bg">
-      {/* Subtle gradient orb behind the card */}
-      <div className="pointer-events-none absolute h-[400px] w-[400px] rounded-full bg-accent/5 blur-[120px]" />
+  const inputStyle = (focused: boolean): React.CSSProperties => ({
+    width: "100%", height: 44, borderRadius: 10,
+    border: "none",
+    background: "rgba(255,255,255,0.04)",
+    boxShadow: focused
+      ? "0 0 0 1px #6c6fff, 0 0 0 4px rgba(108,111,255,0.1)"
+      : "0 0 0 1px rgba(255,255,255,0.08)",
+    color: "#f7f8f8", fontSize: 14, fontWeight: 500,
+    padding: "0 44px 0 16px",
+    outline: "none", fontFamily: "inherit",
+    transition: "box-shadow 0.15s",
+  });
 
-      <div className="relative w-full max-w-md animate-fade-in px-8">
-        <div className="mb-10 text-center">
-          <div className="animate-glow-pulse mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl border border-accent/20 bg-accent-subtle">
-            <ShieldCheck className="h-10 w-10 text-accent" />
+  return (
+    <div style={{
+      height: "100vh", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      background: "radial-gradient(ellipse 600px 500px at 50% 35%, #13141a 0%, #08090a 100%)",
+    }}>
+      <div style={{ width: 360, animation: "fade-in 0.3s ease-out both" }}>
+        {/* Icon */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
+          <div style={{
+            width: 80, height: 80, borderRadius: 22,
+            background: "linear-gradient(145deg, #1a1b22 0%, #141518 100%)",
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.4), 0 0 60px rgba(108,111,255,0.06)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            marginBottom: 20,
+          }}>
+            <ShieldCheck style={{ width: 32, height: 32, color: "#6c6fff" }} />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-text">
-            PastePassword
-          </h1>
-          <p className="mt-2 text-sm text-text-muted">
-            Create a master password to protect your vault
-          </p>
+          <h1 style={{ fontSize: 18, fontWeight: 600, color: "#f7f8f8", letterSpacing: "-0.4px" }}>PastePassword</h1>
+          <p style={{ fontSize: 13, color: "#62666d", marginTop: 4 }}>Create a master password to secure your vault</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-text-muted">
-              Master Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-border bg-bg-secondary px-4 py-3.5 pr-10 text-text outline-none transition-all duration-200 placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent/30"
-                placeholder="Enter a strong password"
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-text-muted transition hover:text-text-secondary"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-            {password && (
-              <div className="mt-3 space-y-1.5">
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4].map((level) => (
-                    <div
-                      key={level}
-                      className="h-1 flex-1 rounded-full transition-all duration-300"
-                      style={{
-                        backgroundColor:
-                          strength >= level ? strengthColor : "var(--color-border)",
-                      }}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs" style={{ color: strengthColor }}>
-                  {strengthLabel}
-                </p>
+        {/* Form Card */}
+        <div style={{
+          background: "linear-gradient(180deg, #16171c 0%, #131418 100%)",
+          borderRadius: 14, padding: 20,
+          boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)",
+        }}>
+          <form onSubmit={handleSubmit}>
+            {/* Password */}
+            <div style={{ marginBottom: 4 }}>
+              <label style={{ fontSize: 11, fontWeight: 500, color: "#62666d", display: "block", marginBottom: 6 }}>Master password</label>
+              <div style={{ position: "relative" }}>
+                <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setPwFocus(true)} onBlur={() => setPwFocus(false)}
+                  placeholder="Choose a strong password" autoFocus style={inputStyle(pwFocus)} />
+                <button type="button" onClick={() => setShowPw(!showPw)} style={{
+                  position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                  background: "none", border: "none", cursor: "pointer", color: "#4a4a5a", padding: 4, display: "flex",
+                }}><Eye style={{ width: 16, height: 16 }} /></button>
               </div>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-text-muted">
-              Confirm Password
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              className="w-full rounded-xl border border-border bg-bg-secondary px-4 py-3.5 text-text outline-none transition-all duration-200 placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent/30"
-              placeholder="Confirm your password"
-            />
-            {confirm && password && confirm !== password && (
-              <p className="mt-1.5 text-xs text-danger">Passwords don't match</p>
-            )}
-          </div>
-
-          {(localError || error) && (
-            <div className="rounded-lg border border-danger/20 bg-danger-subtle px-4 py-2.5 text-sm text-danger">
-              {localError || error}
+              {password && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+                  <div style={{ display: "flex", flex: 1, gap: 3 }}>
+                    {[1,2,3,4].map((l) => (
+                      <div key={l} style={{
+                        height: 3, flex: 1, borderRadius: 2,
+                        background: strength >= l ? sColor : "rgba(255,255,255,0.06)",
+                        transition: "background 0.2s",
+                      }} />
+                    ))}
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: sColor }}>{sLabel}</span>
+                </div>
+              )}
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading || !password || !confirm}
-            className="w-full rounded-xl bg-accent py-3.5 font-medium text-white shadow-lg shadow-accent/20 transition-all duration-200 hover:bg-accent-hover hover:shadow-accent/30 disabled:opacity-40 disabled:shadow-none"
-          >
-            {loading ? "Creating vault..." : "Create Vault"}
-          </button>
+            {/* Confirm */}
+            <div style={{ marginBottom: 16, marginTop: 12 }}>
+              <label style={{ fontSize: 11, fontWeight: 500, color: "#62666d", display: "block", marginBottom: 6 }}>Confirm password</label>
+              <input type={showPw ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)}
+                onFocus={() => setCfFocus(true)} onBlur={() => setCfFocus(false)}
+                placeholder="Repeat your password" style={{ ...inputStyle(cfFocus), paddingRight: 16 }} />
+              {confirm && password && confirm !== password && (
+                <p style={{ fontSize: 11, color: "#e5484d", marginTop: 6 }}>Passwords don't match</p>
+              )}
+            </div>
 
-          <p className="text-center text-[11px] leading-relaxed text-text-muted">
-            Your vault is encrypted locally with AES-256. If you forget this
-            password, your data cannot be recovered.
-          </p>
-        </form>
+            {(localErr || error) && <p style={{ fontSize: 12, color: "#e5484d", marginBottom: 12 }}>{localErr || error}</p>}
+
+            <button type="submit" disabled={loading || !password || !confirm} style={{
+              width: "100%", height: 44, borderRadius: 10,
+              background: loading || !password || !confirm ? "#3a3c70" : "linear-gradient(180deg, #7275ff 0%, #5c5fef 100%)",
+              color: "#fff", fontSize: 14, fontWeight: 600,
+              border: "none", cursor: loading || !password || !confirm ? "not-allowed" : "pointer",
+              opacity: loading || !password || !confirm ? 0.5 : 1,
+              boxShadow: loading || !password || !confirm ? "none" : "0 1px 3px rgba(108,111,255,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+              fontFamily: "inherit", transition: "all 0.15s",
+            }}>
+              {loading ? "Creating vault..." : "Create Vault"}
+            </button>
+          </form>
+        </div>
+
+        <p style={{ textAlign: "center", fontSize: 10, color: "#3a3a4a", marginTop: 16, lineHeight: 1.6 }}>
+          Encrypted locally with AES-256 · Cannot be recovered if lost
+        </p>
       </div>
     </div>
   );
 }
 
-function getStrength(password: string): number {
-  if (!password) return 0;
-  let score = 0;
-  if (password.length >= 8) score++;
-  if (password.length >= 12) score++;
-  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
-  if (/[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) score++;
-  return score;
+function getStrength(p: string): number {
+  if (!p) return 0; let s = 0;
+  if (p.length >= 8) s++; if (p.length >= 12) s++;
+  if (/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
+  if (/[0-9]/.test(p) && /[^A-Za-z0-9]/.test(p)) s++;
+  return s;
 }

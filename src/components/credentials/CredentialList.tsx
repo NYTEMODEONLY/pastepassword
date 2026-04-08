@@ -1,157 +1,109 @@
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useCredentialStore } from "../../stores/credentialStore";
 import { CRED_TYPE_LABELS, CRED_TYPE_COLORS } from "../../types";
-import { cn, timeAgo } from "../../lib/utils";
+import { timeAgo } from "../../lib/utils";
 import { Star, Plus, Search, Key } from "lucide-react";
+import { colors, inputStyle, btnSecondary } from "../../lib/styles";
 
-interface CredentialListProps {
-  onQuickAdd: () => void;
-}
+export function CredentialList({ onQuickAdd }: { onQuickAdd: () => void }) {
+  const { credentials, selectedId, selectCredential, searchQuery, setSearchQuery } = useCredentialStore();
+  const [searchFocused, setSearchFocused] = useState(false);
 
-export function CredentialList({ onQuickAdd }: CredentialListProps) {
-  const {
-    credentials,
-    selectedId,
-    selectCredential,
-    searchQuery,
-    setSearchQuery,
-  } = useCredentialStore();
+  const handleKeyNav = useCallback((e: KeyboardEvent) => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    const i = credentials.findIndex((c) => c.id === selectedId);
+    if (e.key === "j" || e.key === "ArrowDown") { e.preventDefault(); const n = i === -1 ? 0 : Math.min(i + 1, credentials.length - 1); if (credentials[n]) selectCredential(credentials[n].id); }
+    else if (e.key === "k" || e.key === "ArrowUp") { e.preventDefault(); if (i > 0) selectCredential(credentials[i - 1].id); }
+  }, [credentials, selectedId, selectCredential]);
 
-  // Keyboard navigation: j/k to move, Enter to select
-  const handleKeyNav = useCallback(
-    (e: KeyboardEvent) => {
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      )
-        return;
-
-      const currentIndex = credentials.findIndex((c) => c.id === selectedId);
-
-      if (e.key === "j" || e.key === "ArrowDown") {
-        e.preventDefault();
-        const next = Math.min(currentIndex + 1, credentials.length - 1);
-        if (credentials[next]) selectCredential(credentials[next].id);
-      } else if (e.key === "k" || e.key === "ArrowUp") {
-        e.preventDefault();
-        const prev = Math.max(currentIndex - 1, 0);
-        if (credentials[prev]) selectCredential(credentials[prev].id);
-      }
-    },
-    [credentials, selectedId, selectCredential],
-  );
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyNav);
-    return () => window.removeEventListener("keydown", handleKeyNav);
-  }, [handleKeyNav]);
+  useEffect(() => { window.addEventListener("keydown", handleKeyNav); return () => window.removeEventListener("keydown", handleKeyNav); }, [handleKeyNav]);
 
   return (
-    <div className="flex h-full w-80 shrink-0 flex-col border-r border-border bg-bg">
+    <div style={{
+      width: 280, flexShrink: 0, height: "100%",
+      display: "flex", flexDirection: "column",
+      background: colors.bg,
+      borderRight: `1px solid ${colors.border}`,
+    }}>
       {/* Search */}
-      <div className="p-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+      <div style={{ padding: 10 }}>
+        <div style={{ position: "relative" }}>
+          <Search style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 14, height: 14, color: colors.textMuted }} />
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
             placeholder="Search..."
-            className="w-full rounded-lg border border-border bg-bg-secondary px-4 py-2.5 pl-9 text-sm text-text outline-none transition-all duration-200 placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent/20"
-          />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-border px-1.5 py-0.5 text-[10px] text-text-muted">
-            ⌘K
-          </kbd>
+            style={{ ...inputStyle(searchFocused), height: 32, fontSize: 12, paddingLeft: 32, paddingRight: 40 }} />
+          <kbd style={{
+            position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+            fontSize: 9, fontWeight: 600, color: colors.textMuted,
+            background: "rgba(255,255,255,0.04)", borderRadius: 4, padding: "2px 6px",
+          }}>⌘K</kbd>
         </div>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto">
+      <div style={{ flex: 1, overflowY: "auto", padding: "0 6px 6px" }}>
         {credentials.length === 0 ? (
-          <div className="flex flex-col items-center justify-center px-8 py-20 text-center animate-fade-in">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-bg-secondary">
-              <Key className="h-6 w-6 text-text-muted" />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 24px", textAlign: "center" }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 12,
+              background: colors.bgElevated,
+              boxShadow: `0 0 0 1px ${colors.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              marginBottom: 12,
+            }}>
+              <Key style={{ width: 20, height: 20, color: colors.textMuted }} />
             </div>
-            <p className="text-sm font-medium text-text-secondary">
-              No credentials yet
-            </p>
-            <p className="mt-1 text-xs text-text-muted">
-              Add your first secret to get started
-            </p>
-            <button
-              onClick={onQuickAdd}
-              className="mt-4 flex items-center gap-1.5 rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20"
-            >
-              <Plus className="h-4 w-4" />
-              Quick Add
+            <p style={{ fontSize: 13, fontWeight: 600, color: colors.textSecondary }}>No credentials yet</p>
+            <p style={{ fontSize: 11, color: colors.textFaint, marginTop: 4 }}>Add your first secret to get started</p>
+            <button onClick={onQuickAdd} style={{ ...btnSecondary, marginTop: 14, height: 28, fontSize: 11 }}>
+              <Plus style={{ width: 12, height: 12 }} /> Quick Add
             </button>
           </div>
         ) : (
-          <div className="px-2 pb-2">
-            {credentials.map((cred, index) => (
-              <button
-                key={cred.id}
-                onClick={() => selectCredential(cred.id)}
-                className={cn(
-                  "group flex w-full flex-col gap-1.5 rounded-lg px-3 py-3 text-left transition-all duration-150",
-                  selectedId === cred.id
-                    ? "bg-accent/8 ring-1 ring-accent/20"
-                    : "hover:bg-bg-hover",
+          credentials.map((cred) => (
+            <button key={cred.id} onClick={() => selectCredential(cred.id)}
+              style={{
+                width: "100%", display: "flex", flexDirection: "column", gap: 4,
+                padding: "10px 12px", borderRadius: 8, border: "none", cursor: "pointer",
+                textAlign: "left", fontFamily: "inherit", marginBottom: 1,
+                background: selectedId === cred.id ? colors.bgActive : "transparent",
+                transition: "background 0.08s",
+              }}
+              onMouseEnter={(e) => { if (selectedId !== cred.id) e.currentTarget.style.background = colors.bgHover; }}
+              onMouseLeave={(e) => { if (selectedId !== cred.id) e.currentTarget.style.background = "transparent"; }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {cred.is_favorite && <Star style={{ width: 11, height: 11, fill: colors.warning, color: colors.warning, flexShrink: 0 }} />}
+                <span style={{
+                  fontSize: 12, fontWeight: selectedId === cred.id ? 600 : 500,
+                  color: selectedId === cred.id ? colors.text : colors.textSecondary,
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                }}>{cred.title}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{
+                  fontSize: 9, fontWeight: 600, padding: "1px 5px", borderRadius: 3,
+                  background: CRED_TYPE_COLORS[cred.cred_type] + "14",
+                  color: CRED_TYPE_COLORS[cred.cred_type],
+                }}>{CRED_TYPE_LABELS[cred.cred_type]}</span>
+                <span style={{ fontSize: 10, color: colors.textMuted }}>{timeAgo(cred.created_at)}</span>
+                {cred.tags.length > 0 && (
+                  <span style={{ fontSize: 10, color: colors.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    · {cred.tags.map((t) => t.name).join(", ")}
+                  </span>
                 )}
-                style={{
-                  animationDelay: `${index * 30}ms`,
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  {cred.is_favorite && (
-                    <Star className="h-3 w-3 shrink-0 fill-warning text-warning" />
-                  )}
-                  <span
-                    className={cn(
-                      "truncate text-sm",
-                      selectedId === cred.id
-                        ? "font-medium text-text"
-                        : "text-text-secondary group-hover:text-text",
-                    )}
-                  >
-                    {cred.title}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
-                    style={{
-                      backgroundColor:
-                        CRED_TYPE_COLORS[cred.cred_type] + "15",
-                      color: CRED_TYPE_COLORS[cred.cred_type],
-                    }}
-                  >
-                    {CRED_TYPE_LABELS[cred.cred_type]}
-                  </span>
-                  <span className="text-[11px] text-text-muted">
-                    {timeAgo(cred.created_at)}
-                  </span>
-                  {cred.tags.length > 0 && (
-                    <span className="truncate text-[11px] text-text-muted">
-                      · {cred.tags.map((t) => t.name).join(", ")}
-                    </span>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
+              </div>
+            </button>
+          ))
         )}
       </div>
 
-      {/* Count */}
       {credentials.length > 0 && (
-        <div className="border-t border-border px-4 py-2">
-          <p className="text-[11px] text-text-muted">
-            {credentials.length} credential{credentials.length !== 1 ? "s" : ""}
-            {searchQuery && ` matching "${searchQuery}"`}
-          </p>
+        <div style={{ padding: "8px 14px", borderTop: `1px solid ${colors.border}` }}>
+          <p style={{ fontSize: 10, color: colors.textMuted }}>{credentials.length} credential{credentials.length !== 1 ? "s" : ""}</p>
         </div>
       )}
     </div>
   );
 }
+

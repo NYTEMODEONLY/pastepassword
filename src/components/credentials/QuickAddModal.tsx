@@ -4,238 +4,137 @@ import { invoke } from "@tauri-apps/api/core";
 import { readText } from "@tauri-apps/plugin-clipboard-manager";
 import { X } from "lucide-react";
 import { CRED_TYPE_LABELS, type CredentialType } from "../../types";
+import { colors, inputStyle, textareaStyle, selectStyle, labelStyle, btnPrimary, btnSecondary, modalOverlay, modalCard } from "../../lib/styles";
 
-const TYPES: CredentialType[] = [
-  "password",
-  "api_key",
-  "token",
-  "ssh_key",
-  "env_var",
-  "other",
-];
+const TYPES: CredentialType[] = ["password", "api_key", "token", "ssh_key", "env_var", "other"];
 
-interface QuickAddModalProps {
-  onClose: () => void;
-}
-
-export function QuickAddModal({ onClose }: QuickAddModalProps) {
+export function QuickAddModal({ onClose }: { onClose: () => void }) {
   const { addCredential, tags, createTag } = useCredentialStore();
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
   const [credType, setCredType] = useState<CredentialType>("other");
   const [notes, setNotes] = useState("");
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
-  const [newTagName, setNewTagName] = useState("");
+  const [selTags, setSelTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState("");
   const [saving, setSaving] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>("secret");
 
-  // Auto-paste from clipboard on open
   useEffect(() => {
     (async () => {
       try {
-        const text = await readText();
-        if (text && text.trim()) {
-          setValue(text.trim());
-          // Auto-detect type
-          try {
-            const detected = await invoke<string>("detect_credential_type", {
-              value: text.trim(),
-            });
-            if (detected) setCredType(detected as CredentialType);
-          } catch {
-            // ignore detection errors
-          }
-        }
-      } catch {
-        // clipboard empty or inaccessible
-      }
+        const t = await readText();
+        if (t?.trim()) { setValue(t.trim()); try { const d = await invoke<string>("detect_credential_type", { value: t.trim() }); if (d) setCredType(d as CredentialType); } catch {} }
+      } catch {}
     })();
   }, []);
 
-  // Re-detect type when value changes
   useEffect(() => {
     if (!value.trim()) return;
-    const timer = setTimeout(async () => {
-      try {
-        const detected = await invoke<string>("detect_credential_type", {
-          value: value.trim(),
-        });
-        if (detected) setCredType(detected as CredentialType);
-      } catch {
-        // ignore
-      }
-    }, 300);
+    const timer = setTimeout(async () => { try { const d = await invoke<string>("detect_credential_type", { value: value.trim() }); if (d) setCredType(d as CredentialType); } catch {} }, 300);
     return () => clearTimeout(timer);
   }, [value]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!value.trim()) return;
-
     setSaving(true);
-    try {
-      await addCredential({
-        title,
-        value: value.trim(),
-        credType,
-        notes,
-        tagIds: selectedTagIds,
-      });
-      onClose();
-    } catch {
-      setSaving(false);
-    }
+    try { await addCredential({ title, value: value.trim(), credType, notes, tagIds: selTags }); onClose(); } catch { setSaving(false); }
   }
 
-  async function handleCreateTag() {
-    if (!newTagName.trim()) return;
-    try {
-      const tag = await createTag(newTagName.trim());
-      setSelectedTagIds((prev) => [...prev, tag.id]);
-      setNewTagName("");
-    } catch {
-      // duplicate tag or error
-    }
-  }
-
-  function toggleTag(tagId: string) {
-    setSelectedTagIds((prev) =>
-      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId],
-    );
+  async function handleNewTag() {
+    if (!newTag.trim()) return;
+    try { const t = await createTag(newTag.trim()); setSelTags((p) => [...p, t.id]); setNewTag(""); } catch {}
   }
 
   return (
-    <div
-      className="glass-backdrop animate-backdrop-in fixed inset-0 z-50 flex items-center justify-center"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="w-full max-w-lg animate-fade-in-scale rounded-xl border border-border bg-bg-secondary p-6 shadow-2xl shadow-black/40">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-text">Quick Add</h2>
-          <button
-            onClick={onClose}
-            className="rounded p-1 text-text-muted hover:bg-bg-hover hover:text-text"
-          >
-            <X className="h-4 w-4" />
+    <div style={modalOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={{ ...modalCard, width: "100%", maxWidth: 460, padding: 24 }}>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: colors.text, letterSpacing: "-0.3px" }}>Quick Add</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: colors.textFaint, padding: 4, display: "flex" }}>
+            <X style={{ width: 16, height: 16 }} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-sm text-text-secondary">
-              Secret
-            </label>
+        <form onSubmit={handleSubmit}>
+          {/* Secret */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Secret</label>
             <textarea
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full rounded-xl border border-border bg-bg px-4 py-3 font-mono text-sm text-text outline-none transition-all duration-200 placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent/20"
+              value={value} onChange={(e) => setValue(e.target.value)}
+              onFocus={() => setFocusedField("secret")} onBlur={() => setFocusedField(null)}
               placeholder="Paste your credential here..."
-              rows={3}
-              autoFocus
+              rows={3} autoFocus
+              style={textareaStyle(focusedField === "secret")}
             />
           </div>
 
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="mb-1.5 block text-sm text-text-secondary">
-                Type
-              </label>
-              <select
-                value={credType}
-                onChange={(e) => setCredType(e.target.value as CredentialType)}
-                className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-border-focus"
-              >
-                {TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {CRED_TYPE_LABELS[t]}
-                  </option>
-                ))}
+          {/* Type + Title row */}
+          <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>Type</label>
+              <select value={credType} onChange={(e) => setCredType(e.target.value as CredentialType)}
+                onFocus={() => setFocusedField("type")} onBlur={() => setFocusedField(null)}
+                style={selectStyle(focusedField === "type")}>
+                {TYPES.map((t) => <option key={t} value={t}>{CRED_TYPE_LABELS[t]}</option>)}
               </select>
             </div>
-            <div className="flex-1">
-              <label className="mb-1.5 block text-sm text-text-secondary">
-                Title (optional)
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>
+                Title <span style={{ color: colors.textMuted, fontWeight: 400 }}>(optional)</span>
               </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition placeholder:text-text-muted focus:border-border-focus"
-                placeholder="Auto-generated if empty"
-              />
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+                onFocus={() => setFocusedField("title")} onBlur={() => setFocusedField(null)}
+                placeholder="Auto-generated if empty" style={inputStyle(focusedField === "title")} />
             </div>
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm text-text-secondary">
-              Tags
-            </label>
-            <div className="flex flex-wrap gap-1.5">
+          {/* Tags */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Tags</label>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
               {tags.map((tag) => (
-                <button
-                  key={tag.id}
-                  type="button"
-                  onClick={() => toggleTag(tag.id)}
-                  className="rounded-md border px-2 py-1 text-xs font-medium transition"
+                <button key={tag.id} type="button"
+                  onClick={() => setSelTags((p) => p.includes(tag.id) ? p.filter((i) => i !== tag.id) : [...p, tag.id])}
                   style={{
-                    borderColor: selectedTagIds.includes(tag.id)
-                      ? tag.color
-                      : "var(--color-border)",
-                    backgroundColor: selectedTagIds.includes(tag.id)
-                      ? tag.color + "20"
-                      : "transparent",
-                    color: selectedTagIds.includes(tag.id)
-                      ? tag.color
-                      : "var(--color-text-secondary)",
-                  }}
-                >
+                    padding: "3px 10px", borderRadius: 5, fontSize: 11, fontWeight: 500,
+                    cursor: "pointer", border: "none", fontFamily: "inherit",
+                    background: selTags.includes(tag.id) ? tag.color + "20" : "rgba(255,255,255,0.04)",
+                    color: selTags.includes(tag.id) ? tag.color : colors.textTertiary,
+                    boxShadow: selTags.includes(tag.id) ? `0 0 0 1px ${tag.color}30` : `0 0 0 1px ${colors.border}`,
+                    transition: "all 0.1s",
+                  }}>
                   {tag.name}
                 </button>
               ))}
-              <div className="flex items-center gap-1">
-                <input
-                  type="text"
-                  value={newTagName}
-                  onChange={(e) => setNewTagName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleCreateTag();
-                    }
-                  }}
-                  className="w-24 rounded-md border border-border bg-bg px-2 py-1 text-xs text-text outline-none placeholder:text-text-muted focus:border-border-focus"
-                  placeholder="New tag..."
-                />
-              </div>
+              <input type="text" value={newTag} onChange={(e) => setNewTag(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleNewTag(); } }}
+                onFocus={() => setFocusedField("newTag")} onBlur={() => setFocusedField(null)}
+                placeholder="+ new tag"
+                style={{
+                  ...inputStyle(focusedField === "newTag"),
+                  width: 90, height: 26, fontSize: 11, padding: "0 8px",
+                }} />
             </div>
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm text-text-secondary">
-              Notes (optional)
+          {/* Notes */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={labelStyle}>
+              Notes <span style={{ color: colors.textMuted, fontWeight: 400 }}>(optional)</span>
             </label>
-            <input
-              type="text"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition placeholder:text-text-muted focus:border-border-focus"
-              placeholder="What is this for?"
-            />
+            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)}
+              onFocus={() => setFocusedField("notes")} onBlur={() => setFocusedField(null)}
+              placeholder="What is this for?" style={inputStyle(focusedField === "notes")} />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg border border-border px-4 py-2 text-sm text-text-secondary transition hover:bg-bg-hover"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!value.trim() || saving}
-              className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save ⌘S"}
+          {/* Actions */}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <button type="button" onClick={onClose} style={btnSecondary}>Cancel</button>
+            <button type="submit" disabled={!value.trim() || saving}
+              style={{ ...btnPrimary, opacity: !value.trim() || saving ? 0.4 : 1, cursor: !value.trim() || saving ? "not-allowed" : "pointer" }}>
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
