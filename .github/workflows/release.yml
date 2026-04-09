@@ -47,6 +47,12 @@ jobs:
             patchelf \
             libssl-dev
 
+      - name: Install Windows OpenSSL
+        if: matrix.platform == 'windows-latest'
+        run: |
+          choco install openssl -y
+          echo "OPENSSL_DIR=C:\Program Files\OpenSSL-Win64" >> $env:GITHUB_ENV
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
