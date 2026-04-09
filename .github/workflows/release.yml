@@ -1,0 +1,98 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            label: macOS-arm64
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            label: macOS-x64
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            label: Linux-x64
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            label: Windows-x64
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'PastePassword ${{ github.ref_name }}'
+          releaseBody: |
+            ## PastePassword ${{ github.ref_name }}
+
+            Lightweight, local-only credential manager for developers.
+
+            ### Downloads
+            - **macOS** (Apple Silicon): `.dmg` file
+            - **macOS** (Intel): `.dmg` file
+            - **Windows**: `.msi` installer
+            - **Linux**: `.AppImage` or `.deb`
+
+            ### What's included
+            - AES-256 encrypted vault (SQLCipher)
+            - Auto-detect credential types (API keys, tokens, passwords, SSH keys)
+            - Quick Add (⌘N) and Search (⌘K)
+            - System tray with global shortcuts
+            - Auto-lock on idle
+            - Import/Export
+            - Zero network access — fully offline
+
+            Built by [nytemode](https://nytemode.com)
+          releaseDraft: true
+          prerelease: false
+          args: --target ${{ matrix.target }}
+
+  create-universal-macos:
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - name: Note
+        run: echo "Universal macOS binary can be created by combining arm64 and x64 builds with lipo"
