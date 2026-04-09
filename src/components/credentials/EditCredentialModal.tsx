@@ -3,7 +3,8 @@ import { useCredentialStore } from "../../stores/credentialStore";
 import { updateCredential } from "../../lib/tauri";
 import { X } from "lucide-react";
 import { CRED_TYPE_LABELS, type CredentialType, type Credential } from "../../types";
-import { colors, FONT, inputStyle, textareaStyle, selectStyle, labelStyle, btnPrimary, btnSecondary, modalOverlay, modalCard } from "../../lib/styles";
+import { colors, FONT, inputStyle, textareaStyle, labelStyle, btnPrimary, btnSecondary, modalOverlay, modalCard } from "../../lib/styles";
+import { CustomSelect } from "../ui/CustomSelect";
 
 const TYPES: CredentialType[] = ["password", "api_key", "token", "ssh_key", "env_var", "other"];
 
@@ -61,11 +62,14 @@ export function EditCredentialModal({ credential, onClose }: { credential: Crede
           <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Type</label>
-              <select value={credType} onChange={(e) => setCredType(e.target.value as CredentialType)}
-                onFocus={() => setFocused("type")} onBlur={() => setFocused(null)}
-                style={selectStyle(focused === "type")}>
-                {TYPES.map((t) => <option key={t} value={t}>{CRED_TYPE_LABELS[t]}</option>)}
-              </select>
+              <CustomSelect
+                value={credType}
+                options={TYPES.map((t) => ({ value: t, label: CRED_TYPE_LABELS[t] }))}
+                onChange={(v) => setCredType(v as CredentialType)}
+                onFocus={() => setFocused("type")}
+                onBlur={() => setFocused(null)}
+                focused={focused === "type"}
+              />
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Notes</label>

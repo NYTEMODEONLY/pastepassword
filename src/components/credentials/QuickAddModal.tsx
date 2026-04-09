@@ -4,7 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { readText } from "@tauri-apps/plugin-clipboard-manager";
 import { X } from "lucide-react";
 import { CRED_TYPE_LABELS, type CredentialType } from "../../types";
-import { colors, FONT, inputStyle, textareaStyle, selectStyle, labelStyle, btnPrimary, btnSecondary, modalOverlay, modalCard } from "../../lib/styles";
+import { colors, FONT, inputStyle, textareaStyle, labelStyle, btnPrimary, btnSecondary, modalOverlay, modalCard } from "../../lib/styles";
+import { CustomSelect } from "../ui/CustomSelect";
 
 const TYPES: CredentialType[] = ["password", "api_key", "token", "ssh_key", "env_var", "other"];
 
@@ -74,11 +75,14 @@ export function QuickAddModal({ onClose }: { onClose: () => void }) {
           <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Type</label>
-              <select value={credType} onChange={(e) => setCredType(e.target.value as CredentialType)}
-                onFocus={() => setFocusedField("type")} onBlur={() => setFocusedField(null)}
-                style={selectStyle(focusedField === "type")}>
-                {TYPES.map((t) => <option key={t} value={t}>{CRED_TYPE_LABELS[t]}</option>)}
-              </select>
+              <CustomSelect
+                value={credType}
+                options={TYPES.map((t) => ({ value: t, label: CRED_TYPE_LABELS[t] }))}
+                onChange={(v) => setCredType(v as CredentialType)}
+                onFocus={() => setFocusedField("type")}
+                onBlur={() => setFocusedField(null)}
+                focused={focusedField === "type"}
+              />
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>
