@@ -123,8 +123,8 @@ function EmptyDetail() {
   return (
     <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center" }}>
-        <p style={{ fontSize: 12, color: "#4a4a5a" }}>Select a credential to view details</p>
-        <p style={{ fontSize: 11, color: "#3a3a4a", marginTop: 6 }}>
+        <p style={{ fontSize: 12, color: "#6b7280" }}>Select a credential to view details</p>
+        <p style={{ fontSize: 11, color: "#6b7280", marginTop: 6 }}>
           <kbd style={{ background: "rgba(255,255,255,0.04)", borderRadius: 4, padding: "2px 6px", fontSize: 9, fontWeight: 600 }}>j</kbd>
           {" / "}
           <kbd style={{ background: "rgba(255,255,255,0.04)", borderRadius: 4, padding: "2px 6px", fontSize: 9, fontWeight: 600 }}>k</kbd>

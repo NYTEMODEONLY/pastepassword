@@ -26,15 +26,15 @@
   /* Text hierarchy — no pure white */
   --color-text: #f7f8f8;
   --color-text-secondary: #d0d6e0;
-  --color-text-tertiary: #8a8f98;
-  --color-text-quaternary: #62666d;
+  --color-text-tertiary: #9ca3af;
+  --color-text-quaternary: #8a8f98;
 
   /* Indigo accent — Linear-inspired */
-  --color-accent: #6c6fff;
-  --color-accent-hover: #8183ff;
-  --color-accent-muted: #5558d9;
-  --color-accent-surface: rgba(108, 111, 255, 0.10);
-  --color-accent-border: rgba(108, 111, 255, 0.25);
+  --color-accent: #7B45C1;
+  --color-accent-hover: #8F5CD4;
+  --color-accent-muted: #6937A5;
+  --color-accent-surface: rgba(123, 69, 193, 0.10);
+  --color-accent-border: rgba(123, 69, 193, 0.25);
 
   /* Semantic */
   --color-danger: #e5484d;
@@ -123,7 +123,7 @@ input, textarea, pre, select { user-select: text; -webkit-user-select: text; }
 .input:focus {
   box-shadow:
     0 0 0 1px var(--color-accent),
-    0 0 0 3px rgba(108, 111, 255, 0.12);
+    0 0 0 3px rgba(123, 69, 193, 0.12);
 }
 
 .input-lg { height: 40px; padding: 0 14px; font-size: 14px; border-radius: 8px; }

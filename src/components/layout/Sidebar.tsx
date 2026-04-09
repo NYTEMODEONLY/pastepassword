@@ -17,8 +17,8 @@ const TYPE_ICONS: Record<CredentialType, React.ReactNode> = {
 };
 
 const TYPE_COLORS: Record<CredentialType, string> = {
-  password: "#e5484d", api_key: "#6c6fff", token: "#e5a000",
-  ssh_key: "#30a46c", env_var: "#0ea5e9", other: "#8a8f98", unknown: "#62666d",
+  password: "#e5484d", api_key: "#7B45C1", token: "#e5a000",
+  ssh_key: "#30a46c", env_var: "#0ea5e9", other: "#8a8f98", unknown: "#8a8f98",
 };
 
 export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
@@ -40,10 +40,10 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "16px 16px 8px" }}>
         <div style={{
           width: 26, height: 26, borderRadius: 7,
-          background: "rgba(108,111,255,0.12)",
+          background: "rgba(123,69,193,0.12)",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          <Key style={{ width: 14, height: 14, color: "#6c6fff" }} />
+          <Key style={{ width: 14, height: 14, color: "#7B45C1" }} />
         </div>
         <span style={{ fontSize: 13, fontWeight: 600, color: "#f7f8f8", letterSpacing: "-0.2px" }}>PastePassword</span>
       </div>
@@ -52,11 +52,11 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
       <div style={{ padding: "4px 8px 8px" }}>
         <button onClick={onQuickAdd} style={{
           width: "100%", height: 32, borderRadius: 7,
-          background: "#6c6fff", color: "#fff",
+          background: "#7B45C1", color: "#fff",
           display: "flex", alignItems: "center", gap: 6,
           padding: "0 12px",
           fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer",
-          boxShadow: "0 1px 3px rgba(108,111,255,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+          boxShadow: "0 1px 3px rgba(123,69,193,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
         }}>
           <Plus style={{ width: 14, height: 14 }} />
           Quick Add
@@ -80,7 +80,7 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
             onClick={() => setFilter({ ...clear, is_archived: true })} />
         </div>
 
-        <div style={{ fontSize: 10, fontWeight: 600, color: "#4a4a5a", textTransform: "uppercase", letterSpacing: "0.06em", padding: "16px 10px 6px" }}>
+        <div style={{ fontSize: 10, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", padding: "16px 10px 6px" }}>
           Types
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -93,7 +93,7 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
 
         {tags.length > 0 && (
           <>
-            <div style={{ fontSize: 10, fontWeight: 600, color: "#4a4a5a", textTransform: "uppercase", letterSpacing: "0.06em", padding: "16px 10px 6px" }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.06em", padding: "16px 10px 6px" }}>
               Tags
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -114,13 +114,13 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
           <NavBtn icon={<Lock />} label="Lock Vault" active={false} onClick={lock} />
         </div>
         <div style={{ padding: "6px 18px 10px", textAlign: "center" }}>
-          <span style={{ fontSize: 10, color: "#3a3a4a" }}>
+          <span style={{ fontSize: 10, color: "#6b7280" }}>
             a{" "}
             <span
-              style={{ color: "#5a5a6a", cursor: "pointer", textDecoration: "none" }}
+              style={{ color: "#8a8f98", cursor: "pointer", textDecoration: "none" }}
               onClick={() => invoke("open_url", { url: "https://nytemode.com" })}
               onMouseEnter={(e) => { e.currentTarget.style.color = "#8a8f98"; e.currentTarget.style.textDecoration = "underline"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = "#5a5a6a"; e.currentTarget.style.textDecoration = "none"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "#8a8f98"; e.currentTarget.style.textDecoration = "none"; }}
             >
               nytemode
             </span>
@@ -168,7 +168,7 @@ function NavBtn({ icon, label, count, active, onClick, iconColor }: {
       <span style={{
         display: "flex", alignItems: "center", justifyContent: "center",
         width: 16, height: 16, flexShrink: 0,
-        color: active ? "#6c6fff" : (iconColor || "inherit"),
+        color: active ? "#7B45C1" : (iconColor || "inherit"),
       }}>
         <span style={{ display: "flex" }} className="[&>svg]:w-[14px] [&>svg]:h-[14px]">{icon}</span>
       </span>
@@ -176,7 +176,7 @@ function NavBtn({ icon, label, count, active, onClick, iconColor }: {
       {count !== undefined && count > 0 && (
         <span style={{
           marginLeft: "auto", fontSize: 10, fontWeight: 500,
-          color: active ? "#8a8f98" : "#4a4a5a",
+          color: active ? "#8a8f98" : "#6b7280",
           fontVariantNumeric: "tabular-nums",
         }}>{count}</span>
       )}

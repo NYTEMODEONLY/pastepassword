@@ -63,7 +63,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
                   background: autoLock === o.value ? colors.accent : "rgba(255,255,255,0.03)",
                   color: autoLock === o.value ? "#fff" : colors.textTertiary,
                   boxShadow: autoLock === o.value
-                    ? "0 1px 2px rgba(108,111,255,0.25), inset 0 1px 0 rgba(255,255,255,0.1)"
+                    ? "0 1px 2px rgba(123,69,193,0.25), inset 0 1px 0 rgba(255,255,255,0.1)"
                     : `0 0 0 1px ${colors.borderStrong}`,
                   transition: "all 0.1s",
                 }}>{o.label}</button>

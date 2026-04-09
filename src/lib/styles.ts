@@ -21,13 +21,13 @@ export const colors = {
 
   text: "#f7f8f8",
   textSecondary: "#d0d6e0",
-  textTertiary: "#8a8f98",
-  textFaint: "#62666d",
-  textMuted: "#4a4a5a",
+  textTertiary: "#9ca3af",
+  textFaint: "#8a8f98",
+  textMuted: "#6b7280",
 
-  accent: "#6c6fff",
-  accentHover: "#7e80ff",
-  accentBg: "rgba(108,111,255,0.12)",
+  accent: "#7B45C1",
+  accentHover: "#8F5CD4",
+  accentBg: "rgba(123,69,193,0.12)",
 
   danger: "#e5484d",
   success: "#30a46c",
@@ -41,7 +41,7 @@ export const inputStyle = (focused: boolean): CSSProperties => ({
   border: "none",
   background: colors.bgInput,
   boxShadow: focused
-    ? `0 0 0 1px ${colors.accent}, 0 0 0 3px rgba(108,111,255,0.08)`
+    ? `0 0 0 1px ${colors.accent}, 0 0 0 3px rgba(123,69,193,0.08)`
     : `0 0 0 1px ${colors.borderStrong}`,
   color: colors.text,
   fontSize: 13,
@@ -83,7 +83,7 @@ export const labelStyle: CSSProperties = {
 export const btnPrimary: CSSProperties = {
   height: 34,
   borderRadius: 8,
-  background: `linear-gradient(180deg, #7275ff 0%, #5c5fef 100%)`,
+  background: `linear-gradient(180deg, #8F5CD4 0%, #6937A5 100%)`,
   color: "#fff",
   fontSize: 12,
   fontWeight: 600,
@@ -95,7 +95,7 @@ export const btnPrimary: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   gap: 6,
-  boxShadow: "0 1px 3px rgba(108,111,255,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
+  boxShadow: "0 1px 3px rgba(123,69,193,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
   transition: "all 0.12s",
 };
 

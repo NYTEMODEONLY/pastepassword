@@ -28,7 +28,7 @@ export function SetupScreen() {
     border: "none",
     background: "rgba(255,255,255,0.04)",
     boxShadow: focused
-      ? "0 0 0 1px #6c6fff, 0 0 0 4px rgba(108,111,255,0.1)"
+      ? "0 0 0 1px #7B45C1, 0 0 0 4px rgba(123,69,193,0.1)"
       : "0 0 0 1px rgba(255,255,255,0.08)",
     color: "#f7f8f8", fontSize: 14, fontWeight: 500,
     padding: "0 44px 0 16px",
@@ -48,14 +48,14 @@ export function SetupScreen() {
           <div style={{
             width: 80, height: 80, borderRadius: 22,
             background: "linear-gradient(145deg, #1a1b22 0%, #141518 100%)",
-            boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.4), 0 0 60px rgba(108,111,255,0.06)",
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.4), 0 0 60px rgba(123,69,193,0.06)",
             display: "flex", alignItems: "center", justifyContent: "center",
             marginBottom: 20,
           }}>
-            <ShieldCheck style={{ width: 32, height: 32, color: "#6c6fff" }} />
+            <ShieldCheck style={{ width: 32, height: 32, color: "#7B45C1" }} />
           </div>
           <h1 style={{ fontSize: 18, fontWeight: 600, color: "#f7f8f8", letterSpacing: "-0.4px" }}>PastePassword</h1>
-          <p style={{ fontSize: 13, color: "#62666d", marginTop: 4 }}>Create a master password to secure your vault</p>
+          <p style={{ fontSize: 13, color: "#8a8f98", marginTop: 4 }}>Create a master password to secure your vault</p>
         </div>
 
         {/* Form Card */}
@@ -67,14 +67,14 @@ export function SetupScreen() {
           <form onSubmit={handleSubmit}>
             {/* Password */}
             <div style={{ marginBottom: 4 }}>
-              <label style={{ fontSize: 11, fontWeight: 500, color: "#62666d", display: "block", marginBottom: 6 }}>Master password</label>
+              <label style={{ fontSize: 11, fontWeight: 500, color: "#8a8f98", display: "block", marginBottom: 6 }}>Master password</label>
               <div style={{ position: "relative" }}>
                 <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setPwFocus(true)} onBlur={() => setPwFocus(false)}
                   placeholder="Choose a strong password" autoFocus style={inputStyle(pwFocus)} />
                 <button type="button" onClick={() => setShowPw(!showPw)} style={{
                   position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
-                  background: "none", border: "none", cursor: "pointer", color: "#4a4a5a", padding: 4, display: "flex",
+                  background: "none", border: "none", cursor: "pointer", color: "#6b7280", padding: 4, display: "flex",
                 }}><Eye style={{ width: 16, height: 16 }} /></button>
               </div>
               {password && (
@@ -95,7 +95,7 @@ export function SetupScreen() {
 
             {/* Confirm */}
             <div style={{ marginBottom: 16, marginTop: 12 }}>
-              <label style={{ fontSize: 11, fontWeight: 500, color: "#62666d", display: "block", marginBottom: 6 }}>Confirm password</label>
+              <label style={{ fontSize: 11, fontWeight: 500, color: "#8a8f98", display: "block", marginBottom: 6 }}>Confirm password</label>
               <input type={showPw ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)}
                 onFocus={() => setCfFocus(true)} onBlur={() => setCfFocus(false)}
                 placeholder="Repeat your password" style={{ ...inputStyle(cfFocus), paddingRight: 16 }} />
@@ -108,11 +108,11 @@ export function SetupScreen() {
 
             <button type="submit" disabled={loading || !password || !confirm} style={{
               width: "100%", height: 44, borderRadius: 10,
-              background: loading || !password || !confirm ? "#3a3c70" : "linear-gradient(180deg, #7275ff 0%, #5c5fef 100%)",
+              background: loading || !password || !confirm ? "#4a2d6e" : "linear-gradient(180deg, #8F5CD4 0%, #6937A5 100%)",
               color: "#fff", fontSize: 14, fontWeight: 600,
               border: "none", cursor: loading || !password || !confirm ? "not-allowed" : "pointer",
               opacity: loading || !password || !confirm ? 0.5 : 1,
-              boxShadow: loading || !password || !confirm ? "none" : "0 1px 3px rgba(108,111,255,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+              boxShadow: loading || !password || !confirm ? "none" : "0 1px 3px rgba(123,69,193,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
               fontFamily: FONT, transition: "all 0.15s",
             }}>
               {loading ? "Creating vault..." : "Create Vault"}
@@ -120,7 +120,7 @@ export function SetupScreen() {
           </form>
         </div>
 
-        <p style={{ textAlign: "center", fontSize: 10, color: "#3a3a4a", marginTop: 16, lineHeight: 1.6 }}>
+        <p style={{ textAlign: "center", fontSize: 10, color: "#6b7280", marginTop: 16, lineHeight: 1.6 }}>
           Encrypted locally with AES-256 · Cannot be recovered if lost
         </p>
       </div>
