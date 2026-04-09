@@ -49,7 +49,7 @@ html { font-size: 14px; }
 body {
   background: var(--color-bg-base);
   color: var(--color-text);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   font-weight: 500;
   font-feature-settings: "cv01", "ss03";
   overflow: hidden;

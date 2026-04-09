@@ -3,7 +3,7 @@ import { useCredentialStore } from "../../stores/credentialStore";
 import { CRED_TYPE_LABELS, CRED_TYPE_COLORS } from "../../types";
 import { timeAgo } from "../../lib/utils";
 import { Star, Plus, Search, Key } from "lucide-react";
-import { colors, inputStyle, btnSecondary } from "../../lib/styles";
+import { colors, FONT, inputStyle, btnSecondary } from "../../lib/styles";
 
 export function CredentialList({ onQuickAdd }: { onQuickAdd: () => void }) {
   const { credentials, selectedId, selectCredential, searchQuery, setSearchQuery } = useCredentialStore();
@@ -66,7 +66,7 @@ export function CredentialList({ onQuickAdd }: { onQuickAdd: () => void }) {
               style={{
                 width: "100%", display: "flex", flexDirection: "column", gap: 4,
                 padding: "10px 12px", borderRadius: 8, border: "none", cursor: "pointer",
-                textAlign: "left", fontFamily: "inherit", marginBottom: 1,
+                textAlign: "left", fontFamily: FONT, marginBottom: 1,
                 background: selectedId === cred.id ? colors.bgActive : "transparent",
                 transition: "background 0.08s",
               }}

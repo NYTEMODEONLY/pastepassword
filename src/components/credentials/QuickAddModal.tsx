@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { readText } from "@tauri-apps/plugin-clipboard-manager";
 import { X } from "lucide-react";
 import { CRED_TYPE_LABELS, type CredentialType } from "../../types";
-import { colors, inputStyle, textareaStyle, selectStyle, labelStyle, btnPrimary, btnSecondary, modalOverlay, modalCard } from "../../lib/styles";
+import { colors, FONT, inputStyle, textareaStyle, selectStyle, labelStyle, btnPrimary, btnSecondary, modalOverlay, modalCard } from "../../lib/styles";
 
 const TYPES: CredentialType[] = ["password", "api_key", "token", "ssh_key", "env_var", "other"];
 
@@ -99,7 +99,7 @@ export function QuickAddModal({ onClose }: { onClose: () => void }) {
                   onClick={() => setSelTags((p) => p.includes(tag.id) ? p.filter((i) => i !== tag.id) : [...p, tag.id])}
                   style={{
                     padding: "3px 10px", borderRadius: 5, fontSize: 11, fontWeight: 500,
-                    cursor: "pointer", border: "none", fontFamily: "inherit",
+                    cursor: "pointer", border: "none", fontFamily: FONT,
                     background: selTags.includes(tag.id) ? tag.color + "20" : "rgba(255,255,255,0.04)",
                     color: selTags.includes(tag.id) ? tag.color : colors.textTertiary,
                     boxShadow: selTags.includes(tag.id) ? `0 0 0 1px ${tag.color}30` : `0 0 0 1px ${colors.border}`,

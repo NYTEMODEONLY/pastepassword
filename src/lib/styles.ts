@@ -3,6 +3,10 @@ import type { CSSProperties } from "react";
 // Shared style primitives for consistent rendering across the app
 // Using inline styles because Tailwind v4 @theme tokens don't apply reliably in Tauri
 
+// Single font definition — used everywhere
+export const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif';
+export const FONT_MONO = '"SF Mono", "Menlo", "Consolas", "Liberation Mono", monospace';
+
 export const colors = {
   bg: "#08090a",
   bgRaised: "#0f1012",
@@ -44,7 +48,7 @@ export const inputStyle = (focused: boolean): CSSProperties => ({
   fontWeight: 500,
   padding: "0 12px",
   outline: "none",
-  fontFamily: "inherit",
+  fontFamily: FONT,
   transition: "box-shadow 0.12s",
 });
 
@@ -54,7 +58,7 @@ export const textareaStyle = (focused: boolean): CSSProperties => ({
   padding: "10px 12px",
   resize: "none" as const,
   lineHeight: 1.5,
-  fontFamily: "'SF Mono', 'Menlo', 'Consolas', monospace",
+  fontFamily: FONT_MONO,
   fontSize: 12,
 });
 
@@ -85,7 +89,7 @@ export const btnPrimary: CSSProperties = {
   fontWeight: 600,
   border: "none",
   cursor: "pointer",
-  fontFamily: "inherit",
+  fontFamily: FONT,
   padding: "0 16px",
   display: "inline-flex",
   alignItems: "center",
@@ -104,7 +108,7 @@ export const btnSecondary: CSSProperties = {
   fontWeight: 500,
   border: "none",
   cursor: "pointer",
-  fontFamily: "inherit",
+  fontFamily: FONT,
   padding: "0 14px",
   display: "inline-flex",
   alignItems: "center",

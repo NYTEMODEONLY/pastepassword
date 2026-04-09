@@ -5,6 +5,7 @@ import {
   KeyRound, Code, Terminal, FileKey, Hash, HelpCircle, LayoutList,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
+import { FONT } from "../../lib/styles";
 import type { CredentialType } from "../../types";
 import { CRED_TYPE_LABELS } from "../../types";
 
@@ -146,7 +147,7 @@ function NavBtn({ icon, label, count, active, onClick, iconColor }: {
         cursor: "pointer",
         fontSize: 12,
         fontWeight: active ? 550 : 500,
-        fontFamily: "inherit",
+        fontFamily: FONT,
         color: active ? "#f7f8f8" : "#8a8f98",
         background: active ? "rgba(255,255,255,0.07)" : "transparent",
         transition: "all 0.1s",

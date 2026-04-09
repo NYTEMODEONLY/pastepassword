@@ -5,7 +5,7 @@ import { CRED_TYPE_LABELS, CRED_TYPE_COLORS } from "../../types";
 import type { CredentialSummary } from "../../types";
 import { Search, Copy, Check } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
-import { colors, modalOverlay, modalCard } from "../../lib/styles";
+import { colors, FONT, modalOverlay, modalCard } from "../../lib/styles";
 
 export function SearchPalette({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState("");
@@ -54,7 +54,7 @@ export function SearchPalette({ onClose }: { onClose: () => void }) {
             placeholder="Search credentials..."
             style={{
               flex: 1, background: "transparent", border: "none", outline: "none",
-              color: colors.text, fontSize: 14, fontWeight: 500, fontFamily: "inherit",
+              color: colors.text, fontSize: 14, fontWeight: 500, fontFamily: FONT,
             }} />
           <kbd style={{
             fontSize: 9, fontWeight: 600, color: colors.textMuted,
@@ -69,7 +69,7 @@ export function SearchPalette({ onClose }: { onClose: () => void }) {
               <button key={r.id} onClick={() => handleCopy(r.id)} style={{
                 width: "100%", display: "flex", alignItems: "center", gap: 12,
                 padding: "10px 12px", borderRadius: 8, border: "none", cursor: "pointer",
-                textAlign: "left", fontFamily: "inherit",
+                textAlign: "left", fontFamily: FONT,
                 background: i === sel ? colors.bgActive : "transparent",
                 transition: "background 0.08s",
               }}

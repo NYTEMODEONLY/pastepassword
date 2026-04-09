@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 import { Eye, ShieldCheck } from "lucide-react";
+import { FONT } from "../../lib/styles";
 
 export function SetupScreen() {
   const { setup, error, loading } = useAuthStore();
@@ -31,7 +32,7 @@ export function SetupScreen() {
       : "0 0 0 1px rgba(255,255,255,0.08)",
     color: "#f7f8f8", fontSize: 14, fontWeight: 500,
     padding: "0 44px 0 16px",
-    outline: "none", fontFamily: "inherit",
+    outline: "none", fontFamily: FONT,
     transition: "box-shadow 0.15s",
   });
 
@@ -112,7 +113,7 @@ export function SetupScreen() {
               border: "none", cursor: loading || !password || !confirm ? "not-allowed" : "pointer",
               opacity: loading || !password || !confirm ? 0.5 : 1,
               boxShadow: loading || !password || !confirm ? "none" : "0 1px 3px rgba(108,111,255,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
-              fontFamily: "inherit", transition: "all 0.15s",
+              fontFamily: FONT, transition: "all 0.15s",
             }}>
               {loading ? "Creating vault..." : "Create Vault"}
             </button>

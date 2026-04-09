@@ -6,7 +6,7 @@ import { timeAgo, maskValue } from "../../lib/utils";
 import { Copy, Eye, EyeOff, Star, Trash2, Check, X, Pencil, Archive, ArchiveRestore, Calendar, Clock } from "lucide-react";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { EditCredentialModal } from "./EditCredentialModal";
-import { colors, btnPrimary, btnSecondary } from "../../lib/styles";
+import { colors, FONT_MONO, btnPrimary, btnSecondary } from "../../lib/styles";
 
 export function CredentialDetail() {
   const { selectedCredential, deleteCredential, toggleFavorite, selectCredential, loadCredentials } = useCredentialStore();
@@ -72,7 +72,7 @@ export function CredentialDetail() {
               boxShadow: `0 0 0 1px ${colors.border}, inset 0 1px 3px rgba(0,0,0,0.15)`,
             }}>
               <pre style={{
-                fontFamily: "'SF Mono', 'Menlo', 'Consolas', monospace",
+                fontFamily: FONT_MONO,
                 fontSize: 12, lineHeight: 1.6, color: colors.text,
                 whiteSpace: "pre-wrap", wordBreak: "break-all",
                 minHeight: 24, margin: 0,

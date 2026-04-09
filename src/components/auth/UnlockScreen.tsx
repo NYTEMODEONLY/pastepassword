@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 import { Eye, EyeOff } from "lucide-react";
+import { FONT } from "../../lib/styles";
 
 export function UnlockScreen() {
   const { unlock, error, loading } = useAuthStore();
@@ -77,7 +78,7 @@ export function UnlockScreen() {
                   color: "#f7f8f8", fontSize: 14, fontWeight: 500,
                   padding: "0 44px 0 16px",
                   outline: "none",
-                  fontFamily: "inherit",
+                  fontFamily: FONT,
                   transition: "box-shadow 0.15s",
                 }}
               />
@@ -104,7 +105,7 @@ export function UnlockScreen() {
               opacity: loading || !password ? 0.5 : 1,
               boxShadow: loading || !password ? "none" : "0 1px 3px rgba(108,111,255,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
               transition: "all 0.15s",
-              fontFamily: "inherit",
+              fontFamily: FONT,
             }}>
               {loading ? "Unlocking..." : "Unlock"}
             </button>
