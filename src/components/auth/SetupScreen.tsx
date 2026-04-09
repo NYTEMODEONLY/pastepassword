@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
-import { Eye, ShieldCheck } from "lucide-react";
+import { Eye } from "lucide-react";
 import { FONT } from "../../lib/styles";
 
 export function SetupScreen() {
@@ -52,7 +52,7 @@ export function SetupScreen() {
             display: "flex", alignItems: "center", justifyContent: "center",
             marginBottom: 20,
           }}>
-            <ShieldCheck style={{ width: 32, height: 32, color: "#7B45C1" }} />
+            <img src="/app-icon.png" width="48" height="48" alt="PastePassword" style={{ borderRadius: 10 }} />
           </div>
           <h1 style={{ fontSize: 18, fontWeight: 600, color: "#f7f8f8", letterSpacing: "-0.4px" }}>PastePassword</h1>
           <p style={{ fontSize: 13, color: "#8a8f98", marginTop: 4 }}>Create a master password to secure your vault</p>
