@@ -23,9 +23,10 @@ const TYPE_COLORS: Record<CredentialType, string> = {
 
 export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
   const { lock } = useAuthStore();
-  const { filter, setFilter, tags, credentials } = useCredentialStore();
+  const { filter, setFilter, tags, allCredentials } = useCredentialStore();
   const credTypes: CredentialType[] = ["password", "api_key", "token", "ssh_key", "env_var", "other"];
-  const counts = credentials.reduce((a, c) => { a[c.cred_type] = (a[c.cred_type] || 0) + 1; return a; }, {} as Record<string, number>);
+  const counts = allCredentials.reduce((a, c) => { a[c.cred_type] = (a[c.cred_type] || 0) + 1; return a; }, {} as Record<string, number>);
+  const favoriteCount = allCredentials.filter((c) => c.is_favorite).length;
   const noFilter = !filter.cred_type && !filter.is_favorite && !filter.tag_id && !filter.is_archived && filter.sort_by !== "accessed_at";
   const clear = { cred_type: undefined, is_favorite: undefined, tag_id: undefined, is_archived: undefined, sort_by: undefined };
 
@@ -70,9 +71,9 @@ export function Sidebar({ onQuickAdd, onSettings }: SidebarProps) {
       {/* Navigation */}
       <nav style={{ flex: 1, overflowY: "auto", padding: "0 8px" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <NavBtn icon={<LayoutList />} label="All" count={credentials.length} active={noFilter}
+          <NavBtn icon={<LayoutList />} label="All" count={allCredentials.length} active={noFilter}
             onClick={() => setFilter(clear)} />
-          <NavBtn icon={<Star />} label="Favorites" active={filter.is_favorite === true}
+          <NavBtn icon={<Star />} label="Favorites" count={favoriteCount} active={filter.is_favorite === true}
             onClick={() => setFilter({ ...clear, is_favorite: true })} />
           <NavBtn icon={<Clock />} label="Recent" active={filter.sort_by === "accessed_at"}
             onClick={() => setFilter({ ...clear, sort_by: "accessed_at" })} />

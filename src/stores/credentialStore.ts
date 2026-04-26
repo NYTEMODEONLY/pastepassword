@@ -9,6 +9,7 @@ import type {
 
 interface CredentialState {
   credentials: CredentialSummary[];
+  allCredentials: CredentialSummary[];
   selectedId: string | null;
   selectedCredential: Credential | null;
   tags: Tag[];
@@ -35,6 +36,7 @@ interface CredentialState {
 
 export const useCredentialStore = create<CredentialState>((set, get) => ({
   credentials: [],
+  allCredentials: [],
   selectedId: null,
   selectedCredential: null,
   tags: [],
@@ -46,10 +48,13 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
     set({ loading: true });
     try {
       const { searchQuery, filter } = get();
-      const credentials = searchQuery
-        ? await api.searchCredentials(searchQuery)
-        : await api.getCredentials(filter);
-      set({ credentials, loading: false });
+      const [credentials, allCredentials] = await Promise.all([
+        searchQuery
+          ? api.searchCredentials(searchQuery)
+          : api.getCredentials(filter),
+        api.getCredentials({}),
+      ]);
+      set({ credentials, allCredentials, loading: false });
     } catch {
       set({ loading: false });
     }
