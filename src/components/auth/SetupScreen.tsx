@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { useAuthStore } from "../../stores/authStore";
 import { Eye } from "lucide-react";
 import { FONT } from "../../lib/styles";
@@ -120,8 +121,20 @@ export function SetupScreen() {
           </form>
         </div>
 
-        <p style={{ textAlign: "center", fontSize: 10, color: "#6b7280", marginTop: 16, lineHeight: 1.6 }}>
+        <p style={{ textAlign: "center", fontSize: 10, color: "#6b7280", marginTop: 16, marginBottom: 4, lineHeight: 1.6 }}>
           Encrypted locally with AES-256 · Cannot be recovered if lost
+        </p>
+        <p style={{ textAlign: "center", fontSize: 10, color: "#6b7280", margin: 0 }}>
+          a{" "}
+          <span
+            style={{ color: "#8a8f98", cursor: "pointer", textDecoration: "none" }}
+            onClick={() => invoke("open_url", { url: "https://nytemode.com" })}
+            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = "underline"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = "none"; }}
+          >
+            nytemode
+          </span>
+          {" "}project
         </p>
       </div>
     </div>
