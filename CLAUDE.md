@@ -50,11 +50,26 @@ Releases are triggered by pushing a git tag (`v*`), which builds for macOS arm64
 
 **Credential type detection**: `src-tauri/src/detection/credential_type.rs` uses regex to auto-detect types (SSH key, AWS key, JWT, GitHub token, Stripe key, etc.) when adding credentials.
 
+**Auto-lock**: A background thread in `src-tauri/src/lib.rs::setup_auto_lock` polls every 10s and locks the vault if `AppState.should_auto_lock()` returns true. The frontend keeps the timer fresh by invoking `touch_activity` on user interaction and listens for the emitted `vault-locked` event to flip back to the unlock screen. Settings change the timeout via `set_auto_lock_seconds`.
+
+**Tray + window**: The main window hides (not quits) on close — `on_window_event` intercepts `CloseRequested` with `api.prevent_close()`. The tray menu emits `tray-quick-add`, `tray-search`, and `tray-lock` events that the frontend listens for; global shortcuts (registered via the global-shortcut plugin) target the same commands (`CmdOrCtrl+Shift+V` quick-add, `CmdOrCtrl+Shift+F` search).
+
+**Sidebar counts**: `credentialStore` holds two lists — `credentials` (filtered/searched view, drives the main list) and `allCredentials` (unfiltered, drives sidebar totals and per-type counts). Sidebar reads from `allCredentials`; the main list reads from `credentials`. Mixing them produces "All shows 1 when Favorites is selected"–style bugs.
+
+**External links**: Tauri's CSP (`default-src 'self'`) blocks `<a target="_blank">` and `window.open`. Use the existing `open_url` Tauri command (defined in `src-tauri/src/lib.rs`) via `invoke("open_url", { url })` — it shells out to `open`/`cmd start`/`xdg-open` per platform. There's no TS wrapper; call `invoke` directly.
+
 ## Styling
 
-The app uses a dark-only design system (Linear/Raycast-inspired). Theme tokens are defined as CSS custom properties in `src/styles/globals.css` via Tailwind v4 `@theme`.
+The app uses a dark-only design system (Linear/Raycast-inspired) with purple accent `#7B45C1`. Theme tokens are defined in two places:
+
+- **CSS custom properties** in `src/styles/globals.css` via Tailwind v4 `@theme`
+- **Inline style primitives** in `src/lib/styles.ts` (colors, inputStyle, btnPrimary, etc.)
 
 **Important**: Tailwind v4 `@theme` tokens don't render reliably in Tauri's webview for some properties. Critical UI uses **inline styles** from `src/lib/styles.ts` as the reliable path. When adding new UI, prefer importing style objects from `styles.ts` for interactive elements.
+
+**Color changes must be applied in both places** — `styles.ts` for inline styles AND `globals.css` for CSS classes. Several components also have hardcoded color values (auth screens, sidebar) that must be updated manually. Always grep for the old hex value across `*.tsx` files.
+
+**Native `<select>` elements don't work** in Tauri's macOS webview — the OS renders the dropdown popup with its own font, ignoring CSS. Use `CustomSelect` from `src/components/ui/CustomSelect.tsx` instead. It renders the dropdown in the webview with full styling control.
 
 ## Adding a New Tauri Command
 
@@ -62,3 +77,13 @@ The app uses a dark-only design system (Linear/Raycast-inspired). Theme tokens a
 2. Register it in the `generate_handler![]` macro in `src-tauri/src/lib.rs`
 3. Add a typed invoke wrapper in `src/lib/tauri.ts`
 4. Add TypeScript types to `src/types/index.ts` if needed
+
+## Local Install
+
+```bash
+pnpm tauri build --bundles app  # skip the slow DMG step (~30s vs several minutes)
+rm -rf /Applications/PastePassword.app
+cp -R src-tauri/target/release/bundle/macos/PastePassword.app /Applications/
+```
+
+Drop `--bundles app` only when producing a release DMG — the macOS DMG step uses `osascript` to mount and arrange icons and dominates the build time. Since the app isn't code-signed, first launch requires: right-click → Open → confirm in the Gatekeeper dialog.
